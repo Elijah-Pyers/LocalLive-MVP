@@ -1,39 +1,28 @@
-import EventCard from "../components/EventCard.jsx";
+import { Link } from "react-router-dom";
 import { useFavorites } from "../contexts/FavoritesContext.jsx";
 
 export default function Favorites() {
-  const { favorites, removeFavorite } = useFavorites();
+  const { getUserFavorites, removeFavorite } = useFavorites();
+  const favorites = getUserFavorites();
 
   return (
-    <section className="panel">
-      <h2 style={{ marginTop: 0 }}>Favorites</h2>
-      <p className="helper">
-        Saved events are stored in Context + localStorage for the MVP.
-      </p>
-
-      <hr />
+    <section>
+      <h2>Favorites</h2>
 
       {favorites.length === 0 ? (
-        <div className="panel">
-          <h3 style={{ marginTop: 0 }}>No favorites yet</h3>
-          <p className="helper">Open an event and click “Save”.</p>
+        <div className="message">
+          You haven't saved any events yet. <Link to="/events">Browse events</Link>
         </div>
       ) : (
         <div className="grid">
           {favorites.map((ev) => (
-            <EventCard
-              key={ev.id}
-              event={ev}
-              rightSlot={
-                <button
-                  className="danger"
-                  onClick={() => removeFavorite(ev.id)}
-                  aria-label={`remove-${ev.id}`}
-                >
-                  Remove
-                </button>
-              }
-            />
+            <div key={ev.id} className="card">
+              <h3 style={{ marginTop: 0 }}>
+                <Link to={`/events/${ev.id}`}>{ev.name}</Link>
+              </h3>
+              <p className="muted">{ev.dates?.start?.localDate || "—"}</p>
+              <button onClick={() => removeFavorite(ev.id)}>Remove</button>
+            </div>
           ))}
         </div>
       )}

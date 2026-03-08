@@ -8,6 +8,11 @@ import EventDetail from "./pages/EventDetail.jsx";
 import Favorites from "./pages/Favorites.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Admin from "./pages/Admin.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+
 export default function App() {
   return (
     <div className="app">
@@ -19,7 +24,29 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
-          <Route path="/favorites" element={<Favorites />} />
+
+          {/* Auth */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected */}
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

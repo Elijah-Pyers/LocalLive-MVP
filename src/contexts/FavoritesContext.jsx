@@ -1,43 +1,79 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext.jsx";
 
 const FavoritesContext = createContext(null);
 
-const STORAGE_KEY = "locallive_favorites_v1";
+const STORAGE_KEY = "locallive_favorites_by_user_v1";
 
 export function FavoritesProvider({ children }) {
-  const [favorites, setFavorites] = useState(() => {
+  const { user } = useAuth();
+  const username = user?.username;
+
+  // { username: [event, ...] }
+  const [favoritesByUser, setFavoritesByUser] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      return raw ? JSON.parse(raw) : {};
     } catch {
-      return [];
+      return {};
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-  }, [favorites]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(favoritesByUser));
+  }, [favoritesByUser]);
+
+  const getUserFavorites = () => {
+    if (!username) return [];
+    return favoritesByUser[username] || [];
+  };
 
   function addFavorite(event) {
-    setFavorites((prev) => {
-      if (prev.some((e) => e.id === event.id)) return prev;
-      return [event, ...prev];
+    if (!username) return;
+
+    setFavoritesByUser((prev) => {
+      const list = prev[username] || [];
+      if (list.some((e) => e.id === event.id)) return prev;
+
+      return {
+        ...prev,
+        [username]: [event, ...list],
+      };
     });
   }
 
   function removeFavorite(id) {
-    setFavorites((prev) => prev.filter((e) => e.id !== id));
+    if (!username) return;
+
+    setFavoritesByUser((prev) => {
+      const list = prev[username] || [];
+      return {
+        ...prev,
+        [username]: list.filter((e) => e.id !== id),
+      };
+    });
   }
 
   function isFavorite(id) {
-    return favorites.some((e) => e.id === id);
+    if (!username) return false;
+    return (favoritesByUser[username] || []).some((e) => e.id === id);
   }
 
+  const getAllUserFavorites = () => favoritesByUser;
+
+
+  const value = {
+    favoritesByUser,
+    getUserFavorites,
+    getAllUserFavorites,
+    addFavorite,
+    removeFavorite,
+    isFavorite,
+  };
+
   return (
-    <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorite }}
-    >
+    <FavoritesContext.Provider value={value}>
       {children}
     </FavoritesContext.Provider>
   );

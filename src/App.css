@@ -157,3 +157,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   padding: 0.9rem;
 }
 .error strong { color: #ffb3b3; }
+
+
+/* Auth pages */
+.auth{max-width:520px;margin:0 auto;}
+.auth-form{display:grid;gap:12px;}
+.auth-form input,.auth-form select{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;}
+.auth-form button{padding:10px 12px;border-radius:10px;}
+.muted{opacity:.75}
+.error{background:#ffe4e6;border:1px solid #fb7185;padding:10px;border-radius:10px;margin:10px 0;}
+.success{background:#dcfce7;border:1px solid #4ade80;padding:10px;border-radius:10px;margin:10px 0;}
